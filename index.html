@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MaxIA - Creditos</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #14141f;
+  --border: #2a2a3a;
+  --text: #e8e8f0;
+  --muted: #8888a0;
+  --accent: #6c5ce7;
+  --accent-h: #7c6cf7;
+  --opus: #e07020;
+  --kimi: #20a0d0;
+  --green: #00c853;
+  --red: #ff3b3b;
+  --radius: 10px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+a { color: var(--accent); }
+
+/* Layout */
+.container { max-width: 480px; margin: 0 auto; padding: 24px 16px; }
+h1 { font-size: 1.6rem; font-weight: 700; text-align: center; margin-bottom: 8px; }
+h1 span { color: var(--accent); }
+.subtitle { text-align: center; color: var(--muted); font-size: 0.85rem; margin-bottom: 32px; }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+.card h2 { font-size: 1rem; margin-bottom: 12px; font-weight: 600; }
+
+/* Auth form */
+.auth-form { display: flex; flex-direction: column; gap: 12px; }
+.auth-form input { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; color: var(--text); font-size: 0.95rem; outline: none; }
+.auth-form input:focus { border-color: var(--accent); }
+.btn { background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 10px 16px; font-size: 0.95rem; cursor: pointer; font-weight: 600; transition: background .15s; }
+.btn:hover { background: var(--accent-h); }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { border-color: var(--muted); }
+.auth-toggle { text-align: center; font-size: 0.85rem; color: var(--muted); }
+.auth-toggle span { color: var(--accent); cursor: pointer; }
+.auth-toggle span:hover { text-decoration: underline; }
+
+/* Bars */
+.bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.bar-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; width: 44px; }
+.bar-label.opus { color: var(--opus); }
+.bar-label.kimi { color: var(--kimi); }
+.bar-track { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width .4s ease; }
+.bar-fill.opus { background: var(--opus); }
+.bar-fill.kimi { background: var(--kimi); }
+.bar-value { font-size: 0.85rem; font-weight: 600; min-width: 50px; text-align: right; }
+.bar-exp { font-size: 0.75rem; color: var(--muted); text-align: right; margin-top: -10px; margin-bottom: 8px; }
+
+/* Packs */
+.packs-section { margin-top: 8px; }
+.packs-section h3 { font-size: 0.85rem; color: var(--muted); margin-bottom: 10px; }
+.bucket-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+.bucket-tab { flex: 1; padding: 8px; text-align: center; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all .15s; }
+.bucket-tab.active { border-color: var(--accent); color: var(--accent); }
+.pack-grid { display: flex; gap: 10px; }
+.pack-card { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 10px; text-align: center; cursor: pointer; transition: all .15s; }
+.pack-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.pack-price { font-size: 1.3rem; font-weight: 700; }
+.pack-credits { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+/* History */
+.history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.history-item:last-child { border: none; }
+.history-delta { font-weight: 600; }
+.history-delta.pos { color: var(--green); }
+.history-delta.neg { color: var(--red); }
+
+/* Lots */
+.lot-row { display: flex; justify-content: space-between; font-size: 0.82rem; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.lot-row:last-child { border: none; }
+
+/* Toast */
+.toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--border); padding: 12px 20px; border-radius: 8px; font-size: 0.9rem; z-index: 100; opacity: 0; transition: opacity .3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+.toast.ok { border-color: var(--green); }
+.toast.err { border-color: var(--red); }
+
+/* Misc */
+.hidden { display: none !important; }
+.email-display { font-size: 0.85rem; color: var(--muted); text-align: center; margin-bottom: 16px; }
+.logout-row { text-align: center; margin-top: 12px; }
+.month-stat { font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+.loading { text-align: center; color: var(--muted); padding: 20px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Max<span>IA</span></h1>
+  <p class="subtitle">Asistente de inteligencia artificial para 3ds Max</p>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Auth section -->
+  <div id="auth-section">
+    <div class="card">
+      <h2 id="auth-title">Iniciar sesion</h2>
+      <form class="auth-form" id="auth-form">
+        <input type="email" id="auth-email" placeholder="Correo electronico" required autocomplete="email">
+        <input type="password" id="auth-pass" placeholder="Contrasena" required autocomplete="current-password" minlength="6">
+        <button type="submit" class="btn" id="auth-btn">Entrar</button>
+      </form>
+      <p class="auth-toggle" style="margin-top:12px">
+        <span id="auth-switch"></span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Dashboard section -->
+  <div id="dash-section" class="hidden">
+    <p class="email-display" id="dash-email"></p>
+
+    <!-- Balance card -->
+    <div class="card" id="balance-card">
+      <h2>Tu saldo</h2>
+      <div id="balance-loading" class="loading">Cargando...</div>
+      <div id="balance-content" class="hidden">
+        <div class="bar-row">
+          <span class="bar-label opus">Opus</span>
+          <div class="bar-track"><div class="bar-fill opus" id="bar-opus"></div></div>
+          <span class="bar-value" id="val-opus">0</span>
+        </div>
+        <p class="bar-exp" id="exp-opus"></p>
+        <div class="bar-row">
+          <span class="bar-label kimi">Kimi</span>
+          <div class="bar-track"><div class="bar-fill kimi" id="bar-kimi"></div></div>
+          <span class="bar-value" id="val-kimi">0</span>
+        </div>
+        <p class="bar-exp" id="exp-kimi"></p>
+        <p class="month-stat" id="month-stat"></p>
+
+        <!-- Buy packs -->
+        <div class="packs-section">
+          <h3>Comprar creditos</h3>
+          <div class="bucket-tabs">
+            <div class="bucket-tab active" data-bucket="opus">Opus</div>
+            <div class="bucket-tab" data-bucket="kimi">Kimi</div>
+          </div>
+          <div class="pack-grid" id="pack-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active lots -->
+    <div class="card" id="lots-card" class="hidden">
+      <h2>Lotes activos</h2>
+      <div id="lots-list"></div>
+    </div>
+
+    <!-- History -->
+    <div class="card" id="history-card">
+      <h2>Movimientos recientes</h2>
+      <div id="history-list"></div>
+    </div>
+
+    <div class="logout-row">
+      <button class="btn btn-outline" id="logout-btn">Cerrar sesion</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/+esm';
+
+const SUPA_URL = 'https://vlrofsoztpzfcfatsekf.supabase.co';
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZscm9mc296dHB6ZmNmYXRzZWtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMzM3MzgsImV4cCI6MjEwNjgwOTczOH0.W4lh15_Z3eNEiKlAdmVPR5X6QnS3B_AFjTOnaY6u-2c';
+const FN = `${SUPA_URL}/functions/v1`;
+
+const supabase = createClient(SUPA_URL, SUPA_ANON);
+
+// DOM refs
+const $ = (id) => document.getElementById(id);
+const authSection = $('auth-section');
+const dashSection = $('dash-section');
+const authForm = $('auth-form');
+const authTitle = $('auth-title');
+const authSwitch = $('auth-switch');
+const authBtn = $('auth-btn');
+const toastEl = $('toast');
+
+let isLogin = true;
+let selectedBucket = 'opus';
+let balanceData = null;
+
+// Toast
+function toast(msg, ok = true) {
+  toastEl.textContent = msg;
+  toastEl.className = `toast show ${ok ? 'ok' : 'err'}`;
+  setTimeout(() => toastEl.classList.remove('show'), 3500);
+}
+
+// Auth mode toggle
+function updateAuthUI() {
+  authTitle.textContent = isLogin ? 'Iniciar sesion' : 'Crear cuenta';
+  authBtn.textContent = isLogin ? 'Entrar' : 'Registrarme';
+  authSwitch.textContent = isLogin ? 'Crear cuenta' : 'Ya tengo cuenta';
+  $('auth-pass').autocomplete = isLogin ? 'current-password' : 'new-password';
+}
+authSwitch.onclick = () => { isLogin = !isLogin; updateAuthUI(); };
+updateAuthUI();
+
+// Auth submit
+authForm.onsubmit = async (e) => {
+  e.preventDefault();
+  authBtn.disabled = true;
+  const email = $('auth-email').value.trim();
+  const password = $('auth-pass').value;
+  try {
+    const { error } = isLogin
+      ? await supabase.auth.signInWithPassword({ email, password })
+      : await supabase.auth.signUp({ email, password });
+    if (error) throw error;
+    if (!isLogin) toast('Revisa tu correo para confirmar la cuenta.');
+  } catch (err) {
+    toast(err.message || 'Error de autenticacion', false);
+  }
+  authBtn.disabled = false;
+};
+
+// Logout
+$('logout-btn').onclick = async () => {
+  await supabase.auth.signOut();
+};
+
+// Auth state
+supabase.auth.onAuthStateChange((event, session) => {
+  if (session?.user) {
+    authSection.classList.add('hidden');
+    dashSection.classList.remove('hidden');
+    $('dash-email').textContent = session.user.email;
+    loadBalance(session.access_token);
+  } else {
+    authSection.classList.remove('hidden');
+    dashSection.classList.add('hidden');
+  }
+});
+
+// Check URL for payment result
+const params = new URLSearchParams(location.search);
+if (params.get('pago') === 'ok') {
+  toast('Pago exitoso. Tus creditos se acreditaron.');
+  history.replaceState(null, '', '/');
+} else if (params.get('pago') === 'cancelado') {
+  toast('Pago cancelado.', false);
+  history.replaceState(null, '', '/');
+}
+
+// Load balance
+async function loadBalance(token) {
+  $('balance-loading').classList.remove('hidden');
+  $('balance-content').classList.add('hidden');
+  try {
+    const r = await fetch(`${FN}/balance`, {
+      headers: { Authorization: `Bearer ${token}`, apikey: SUPA_ANON }
+    });
+    if (!r.ok) throw new Error('Error cargando saldo');
+    balanceData = await r.json();
+    renderBalance();
+  } catch (err) {
+    $('balance-loading').textContent = 'No se pudo cargar el saldo.';
+  }
+}
+
+function renderBalance() {
+  if (!balanceData) return;
+  $('balance-loading').classList.add('hidden');
+  $('balance-content').classList.remove('hidden');
+  const d = balanceData;
+  const maxCredits = 5000;
+
+  // Bars
+  const opusB = d.opus?.balance || 0;
+  const kimiB = d.kimi?.balance || 0;
+  $('val-opus').textContent = Math.round(opusB).toLocaleString();
+  $('val-kimi').textContent = Math.round(kimiB).toLocaleString();
+  $('bar-opus').style.width = Math.min(100, (opusB / maxCredits) * 100) + '%';
+  $('bar-kimi').style.width = Math.min(100, (kimiB / maxCredits) * 100) + '%';
+
+  // Expiration
+  const fmtDate = (iso) => {
+    if (!iso) return '';
+    const dt = new Date(iso);
+    return dt.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
+  };
+  $('exp-opus').textContent = d.opus?.expires_at ? `vence ${fmtDate(d.opus.expires_at)}` : '';
+  $('exp-kimi').textContent = d.kimi?.expires_at ? `vence ${fmtDate(d.kimi.expires_at)}` : '';
+  $('month-stat').textContent = `Este mes: ${d.month_calls || 0} consultas`;
+
+  // Packs
+  renderPacks();
+
+  // Lots
+  const lotsList = $('lots-list');
+  const lots = d.lots || [];
+  if (lots.length === 0) {
+    lotsList.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Sin lotes activos</p>';
+  } else {
+    lotsList.innerHTML = lots.map(l =>
+      `<div class="lot-row">
+        <span><strong style="color:var(--${l.bucket})">${l.bucket.toUpperCase()}</strong> ${Math.round(l.remaining)}/${Math.round(l.credits)}</span>
+        <span style="color:var(--muted)">vence ${fmtDate(l.expires_at)}</span>
+      </div>`
+    ).join('');
+  }
+
+  // History
+  const histList = $('history-list');
+  const hist = d.history || [];
+  if (hist.length === 0) {
+    histList.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Sin movimientos</p>';
+  } else {
+    histList.innerHTML = hist.map(h => {
+      const delta = Number(h.delta);
+      const cls = delta > 0 ? 'pos' : 'neg';
+      const sign = delta > 0 ? '+' : '';
+      return `<div class="history-item">
+        <span>${h.kind} · ${h.bucket}</span>
+        <span class="history-delta ${cls}">${sign}${Math.round(delta)}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+// Packs
+function renderPacks() {
+  const packs = balanceData?.packs || [];
+  const grid = $('pack-grid');
+  grid.innerHTML = packs.map(p =>
+    `<div class="pack-card" data-usd="${p.usd}">
+      <div class="pack-price">$${p.usd}</div>
+      <div class="pack-credits">${Number(p.credits).toLocaleString()} creditos</div>
+    </div>`
+  ).join('');
+  grid.querySelectorAll('.pack-card').forEach(el => {
+    el.onclick = () => buyPack(selectedBucket, Number(el.dataset.usd));
+  });
+}
+
+// Bucket tabs
+document.querySelectorAll('.bucket-tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('.bucket-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    selectedBucket = tab.dataset.bucket;
+  };
+});
+
+// Buy
+async function buyPack(bucket, usd) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) { toast('Inicia sesion primero', false); return; }
+  toast('Redirigiendo a Stripe...');
+  try {
+    const r = await fetch(`${FN}/checkout`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        apikey: SUPA_ANON,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ bucket, usd }),
+    });
+    const data = await r.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      toast(data.error || 'Error al iniciar el pago', false);
+    }
+  } catch (err) {
+    toast('Error de conexion', false);
+  }
+}
+</script>
+</body>
+</html>
