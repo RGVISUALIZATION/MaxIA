@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MaxIA - Creditos</title>
+<title>MaxIA - Asistente de IA para 3ds Max</title>
 <style>
 :root {
   --bg: #0a0a0f;
@@ -15,6 +15,7 @@
   --accent-h: #7c6cf7;
   --opus: #e07020;
   --kimi: #20a0d0;
+  --astra: #10a37f;
   --green: #00c853;
   --red: #ff3b3b;
   --radius: 10px;
@@ -24,7 +25,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 a { color: var(--accent); }
 
 /* Layout */
-.container { max-width: 480px; margin: 0 auto; padding: 24px 16px; }
+.container { max-width: 560px; margin: 0 auto; padding: 24px 16px; display: flex; flex-direction: column; }
+h1, .subtitle, .toast { order: -1; }
+#auth-section, #dash-section { order: 1; }
+#info { order: 0; }
+body.in #info { order: 2; margin-top: 8px; }
 h1 { font-size: 1.6rem; font-weight: 700; text-align: center; margin-bottom: 8px; }
 h1 span { color: var(--accent); }
 .subtitle { text-align: center; color: var(--muted); font-size: 0.85rem; margin-bottom: 32px; }
@@ -51,10 +56,12 @@ h1 span { color: var(--accent); }
 .bar-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; width: 44px; }
 .bar-label.opus { color: var(--opus); }
 .bar-label.kimi { color: var(--kimi); }
+.bar-label.astra { color: var(--astra); }
 .bar-track { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
 .bar-fill { height: 100%; border-radius: 4px; transition: width .4s ease; }
 .bar-fill.opus { background: var(--opus); }
 .bar-fill.kimi { background: var(--kimi); }
+.bar-fill.astra { background: var(--astra); }
 .bar-value { font-size: 0.85rem; font-weight: 600; min-width: 50px; text-align: right; }
 .bar-exp { font-size: 0.75rem; color: var(--muted); text-align: right; margin-top: -10px; margin-bottom: 8px; }
 
@@ -93,6 +100,28 @@ h1 span { color: var(--accent); }
 .logout-row { text-align: center; margin-top: 12px; }
 .month-stat { font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
 .loading { text-align: center; color: var(--muted); padding: 20px; }
+
+/* Info / descarga */
+.hero { text-align: center; margin: 4px 0 20px; }
+.hero p { color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
+.feat { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.feat li { font-size: 0.9rem; line-height: 1.45; padding-left: 22px; position: relative; }
+.feat li::before { content: ''; position: absolute; left: 4px; top: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.feat b { color: var(--text); }
+.ia-row { display: flex; gap: 10px; }
+.ia { flex: 1; background: var(--bg); border: 1px solid var(--border); border-top-width: 3px; border-radius: 8px; padding: 12px 10px; }
+.ia b { display: block; font-size: 0.9rem; margin-bottom: 4px; }
+.ia span { font-size: 0.78rem; color: var(--muted); line-height: 1.4; display: block; }
+.ia.kimi { border-top-color: var(--kimi); } .ia.kimi b { color: var(--kimi); }
+.ia.opus { border-top-color: var(--opus); } .ia.opus b { color: var(--opus); }
+.ia.astra { border-top-color: var(--astra); } .ia.astra b { color: var(--astra); }
+.note { font-size: 0.8rem; color: var(--muted); margin-top: 12px; line-height: 1.45; }
+.dl-btn { display: block; text-align: center; text-decoration: none; padding: 14px 16px; font-size: 1rem; }
+.dl-meta { text-align: center; font-size: 0.78rem; color: var(--muted); margin: 8px 0 16px; }
+.steps { padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 0.88rem; line-height: 1.45; }
+.steps li::marker { color: var(--accent); font-weight: 700; }
+.hl { color: var(--text); font-weight: 600; }
+@media (max-width: 420px) { .ia-row { flex-direction: column; } }
 </style>
 </head>
 <body>
@@ -103,6 +132,46 @@ h1 span { color: var(--accent); }
 
   <!-- Toast -->
   <div id="toast" class="toast"></div>
+
+  <!-- Info + descarga -->
+  <div id="info">
+    <div class="hero">
+      <p>Dile a MaxIA lo que necesitas y lo hace dentro de tu escena de 3ds Max. Menos horas en tareas repetitivas, mas tiempo para disenar.</p>
+    </div>
+
+    <div class="card">
+      <h2>Que hace por ti</h2>
+      <ul class="feat">
+        <li><b>Lee tu escena</b> y trabaja sobre ella: no tienes que describir nada.</li>
+        <li><b>Iluminacion, materiales V-Ray, camaras y render</b>: ajustes en lote y configuraciones listas para entregar.</li>
+        <li><b>Limpia y ordena</b> escenas heredadas, y automatiza lo que repites en cada proyecto.</li>
+        <li><b>Tu decides</b>: ves lo que va a hacer antes de ejecutarlo y cada tarea se deshace con un solo Ctrl+Z.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Tres IAs, tu eliges</h2>
+      <div class="ia-row">
+        <div class="ia kimi"><b>Kimi</b><span>Rapida y economica. Para el dia a dia y tareas repetitivas.</span></div>
+        <div class="ia opus"><b>Opus</b><span>Escenas complejas y trabajo delicado, cuando quieres acertar a la primera.</span></div>
+        <div class="ia astra"><b>Astra</b><span>Los problemas mas dificiles. Solo se usa si la eliges.</span></div>
+      </div>
+      <p class="note">Sin suscripcion ni API keys: compras creditos por IA (desde $10 USD) y vencen a los 90 dias. Una tarea tipica con Kimi cuesta unos centavos de dolar. Empieza con Kimi y sube de nivel solo si lo necesitas.</p>
+    </div>
+
+    <div class="card" id="download">
+      <h2>Descargar MaxIA</h2>
+      <a class="btn dl-btn" href="/MaxIA.mzp" download>Descargar MaxIA (.mzp)</a>
+      <p class="dl-meta">Version 4.4.0 &middot; para 3ds Max 2024 / 2025 con V-Ray &middot; Windows</p>
+      <ol class="steps">
+        <li>Descarga el archivo y <span class="hl">arrastralo sobre el viewport</span> de 3ds Max.</li>
+        <li>Pulsa <span class="hl">Instalar MaxIA</span> (si lo pide, reinicia 3ds Max).</li>
+        <li>Agrega el boton: Customize &gt; Customize User Interface &gt; Toolbars &gt; categoria <span class="hl">MaxIA</span>.</li>
+        <li>Abre MaxIA, pulsa <span class="hl">Cuenta</span> y entra con el correo con el que te registraste aqui.</li>
+      </ol>
+      <p class="note">Primero crea tu cuenta aqui abajo y compra tus primeros creditos; despues entras con la misma cuenta desde 3ds Max.</p>
+    </div>
+  </div>
 
   <!-- Auth section -->
   <div id="auth-section">
@@ -140,6 +209,12 @@ h1 span { color: var(--accent); }
           <span class="bar-value" id="val-kimi">0</span>
         </div>
         <p class="bar-exp" id="exp-kimi"></p>
+        <div class="bar-row">
+          <span class="bar-label astra">Astra</span>
+          <div class="bar-track"><div class="bar-fill astra" id="bar-astra"></div></div>
+          <span class="bar-value" id="val-astra">0</span>
+        </div>
+        <p class="bar-exp" id="exp-astra"></p>
         <p class="month-stat" id="month-stat"></p>
 
         <!-- Buy packs -->
@@ -148,6 +223,7 @@ h1 span { color: var(--accent); }
           <div class="bucket-tabs">
             <div class="bucket-tab active" data-bucket="opus">Opus</div>
             <div class="bucket-tab" data-bucket="kimi">Kimi</div>
+            <div class="bucket-tab" data-bucket="astra">Astra</div>
           </div>
           <div class="pack-grid" id="pack-grid"></div>
         </div>
@@ -240,11 +316,13 @@ supabase.auth.onAuthStateChange((event, session) => {
   if (session?.user) {
     authSection.classList.add('hidden');
     dashSection.classList.remove('hidden');
+    document.body.classList.add('in');
     $('dash-email').textContent = session.user.email;
     loadBalance(session.access_token);
   } else {
     authSection.classList.remove('hidden');
     dashSection.classList.add('hidden');
+    document.body.classList.remove('in');
   }
 });
 
@@ -288,6 +366,9 @@ function renderBalance() {
   $('val-kimi').textContent = Math.round(kimiB).toLocaleString();
   $('bar-opus').style.width = Math.min(100, (opusB / maxCredits) * 100) + '%';
   $('bar-kimi').style.width = Math.min(100, (kimiB / maxCredits) * 100) + '%';
+  const astraB = d.astra?.balance || 0;
+  $('val-astra').textContent = Math.round(astraB).toLocaleString();
+  $('bar-astra').style.width = Math.min(100, (astraB / maxCredits) * 100) + '%';
 
   // Expiration
   const fmtDate = (iso) => {
@@ -297,6 +378,7 @@ function renderBalance() {
   };
   $('exp-opus').textContent = d.opus?.expires_at ? `vence ${fmtDate(d.opus.expires_at)}` : '';
   $('exp-kimi').textContent = d.kimi?.expires_at ? `vence ${fmtDate(d.kimi.expires_at)}` : '';
+  $('exp-astra').textContent = d.astra?.expires_at ? `vence ${fmtDate(d.astra.expires_at)}` : '';
   $('month-stat').textContent = `Este mes: ${d.month_calls || 0} consultas`;
 
   // Packs
