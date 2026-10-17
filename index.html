@@ -257,6 +257,19 @@ const FN = `${SUPA_URL}/functions/v1`;
 
 const supabase = createClient(SUPA_URL, SUPA_ANON);
 
+document.querySelectorAll('.dl-btn').forEach(function(a){
+  a.addEventListener('click', function(){
+    try {
+      fetch(SUPA_URL + '/rest/v1/rpc/maxia_log_download', {
+        method: 'POST', keepalive: true,
+        headers: { 'Content-Type': 'application/json', apikey: SUPA_ANON, Authorization: 'Bearer ' + SUPA_ANON },
+        body: JSON.stringify({ p_version: '4.4.0', p_referrer: document.referrer || null })
+      }).catch(function(){});
+    } catch(e) {}
+  });
+});
+
+
 // DOM refs
 const $ = (id) => document.getElementById(id);
 const authSection = $('auth-section');
