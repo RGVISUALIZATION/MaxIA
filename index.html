@@ -57,11 +57,13 @@ h1 span { color: var(--accent); }
 .bar-label.opus { color: var(--opus); }
 .bar-label.kimi { color: var(--kimi); }
 .bar-label.astra { color: var(--astra); }
+.bar-label.total { color: var(--accent); }
 .bar-track { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
 .bar-fill { height: 100%; border-radius: 4px; transition: width .4s ease; }
 .bar-fill.opus { background: var(--opus); }
 .bar-fill.kimi { background: var(--kimi); }
 .bar-fill.astra { background: var(--astra); }
+.bar-fill.total { background: linear-gradient(90deg, var(--kimi), var(--opus), var(--astra)); }
 .bar-value { font-size: 0.85rem; font-weight: 600; min-width: 50px; text-align: right; }
 .bar-exp { font-size: 0.75rem; color: var(--muted); text-align: right; margin-top: -10px; margin-bottom: 8px; }
 
@@ -156,13 +158,13 @@ h1 span { color: var(--accent); }
         <div class="ia opus"><b>Opus</b><span>Escenas complejas y trabajo delicado, cuando quieres acertar a la primera.</span></div>
         <div class="ia astra"><b>Astra</b><span>Los problemas mas dificiles. Solo se usa si la eliges.</span></div>
       </div>
-      <p class="note">Sin suscripcion ni API keys: compras creditos por IA (desde $10 USD) y vencen a los 90 dias. Una tarea tipica con Kimi cuesta unos centavos de dolar. Empieza con Kimi y sube de nivel solo si lo necesitas.</p>
+      <p class="note">Sin suscripcion ni API keys: compras un solo saldo de creditos (desde $10 USD) que sirve para las tres IAs y vence a los 90 dias. Cada IA descuenta segun lo que cuesta: una tarea tipica con Kimi cuesta unos centavos de dolar; Opus y Astra, mas. Usa el modo Auto y MaxIA elige entre Kimi y Opus por ti.</p>
     </div>
 
     <div class="card" id="download">
       <h2>Descargar MaxIA</h2>
       <a class="btn dl-btn" href="/MaxIA.mzp" download>Descargar MaxIA (.mzp)</a>
-      <p class="dl-meta">Version 4.4.0 &middot; para 3ds Max 2023 a 2026 con V-Ray &middot; Windows</p>
+      <p class="dl-meta">Version 4.5.0 &middot; para 3ds Max 2023 a 2026 con V-Ray &middot; Windows</p>
       <ol class="steps">
         <li>Descarga el archivo y <span class="hl">arrastralo sobre el viewport</span> de 3ds Max. Si al arrastrar no pasa nada, ve a <span class="hl">Scripting &gt; Run Script</span> (Ejecutar script), elige <span class="hl">MaxIA.mzp</span> y pulsa Abrir.</li>
         <li>Pulsa <span class="hl">Instalar MaxIA</span> (si lo pide, reinicia 3ds Max).</li>
@@ -198,33 +200,17 @@ h1 span { color: var(--accent); }
       <div id="balance-loading" class="loading">Cargando...</div>
       <div id="balance-content" class="hidden">
         <div class="bar-row">
-          <span class="bar-label opus">Opus</span>
-          <div class="bar-track"><div class="bar-fill opus" id="bar-opus"></div></div>
-          <span class="bar-value" id="val-opus">0</span>
+          <span class="bar-label total">Creditos</span>
+          <div class="bar-track"><div class="bar-fill total" id="bar-total"></div></div>
+          <span class="bar-value" id="val-total">0</span>
         </div>
-        <p class="bar-exp" id="exp-opus"></p>
-        <div class="bar-row">
-          <span class="bar-label kimi">Kimi</span>
-          <div class="bar-track"><div class="bar-fill kimi" id="bar-kimi"></div></div>
-          <span class="bar-value" id="val-kimi">0</span>
-        </div>
-        <p class="bar-exp" id="exp-kimi"></p>
-        <div class="bar-row">
-          <span class="bar-label astra">Astra</span>
-          <div class="bar-track"><div class="bar-fill astra" id="bar-astra"></div></div>
-          <span class="bar-value" id="val-astra">0</span>
-        </div>
-        <p class="bar-exp" id="exp-astra"></p>
+        <p class="bar-exp" id="exp-total"></p>
+        <p class="bar-exp">Tus creditos sirven para Kimi, Opus y Astra: eliges la IA en cada tarea.</p>
         <p class="month-stat" id="month-stat"></p>
 
         <!-- Buy packs -->
         <div class="packs-section">
           <h3>Comprar creditos</h3>
-          <div class="bucket-tabs">
-            <div class="bucket-tab active" data-bucket="opus">Opus</div>
-            <div class="bucket-tab" data-bucket="kimi">Kimi</div>
-            <div class="bucket-tab" data-bucket="astra">Astra</div>
-          </div>
           <div class="pack-grid" id="pack-grid"></div>
         </div>
       </div>
@@ -263,7 +249,7 @@ document.querySelectorAll('.dl-btn').forEach(function(a){
       fetch(SUPA_URL + '/rest/v1/rpc/maxia_log_download', {
         method: 'POST', keepalive: true,
         headers: { 'Content-Type': 'application/json', apikey: SUPA_ANON, Authorization: 'Bearer ' + SUPA_ANON },
-        body: JSON.stringify({ p_version: '4.4.0', p_referrer: document.referrer || null })
+        body: JSON.stringify({ p_version: '4.5.0', p_referrer: document.referrer || null })
       }).catch(function(){});
     } catch(e) {}
   });
@@ -281,7 +267,7 @@ const authBtn = $('auth-btn');
 const toastEl = $('toast');
 
 let isLogin = true;
-let selectedBucket = 'opus';
+
 let balanceData = null;
 
 // Toast
@@ -372,26 +358,16 @@ function renderBalance() {
   const d = balanceData;
   const maxCredits = 5000;
 
-  // Bars
-  const opusB = d.opus?.balance || 0;
-  const kimiB = d.kimi?.balance || 0;
-  $('val-opus').textContent = Math.round(opusB).toLocaleString();
-  $('val-kimi').textContent = Math.round(kimiB).toLocaleString();
-  $('bar-opus').style.width = Math.min(100, (opusB / maxCredits) * 100) + '%';
-  $('bar-kimi').style.width = Math.min(100, (kimiB / maxCredits) * 100) + '%';
-  const astraB = d.astra?.balance || 0;
-  $('val-astra').textContent = Math.round(astraB).toLocaleString();
-  $('bar-astra').style.width = Math.min(100, (astraB / maxCredits) * 100) + '%';
-
-  // Expiration
   const fmtDate = (iso) => {
     if (!iso) return '';
     const dt = new Date(iso);
     return dt.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
   };
-  $('exp-opus').textContent = d.opus?.expires_at ? `vence ${fmtDate(d.opus.expires_at)}` : '';
-  $('exp-kimi').textContent = d.kimi?.expires_at ? `vence ${fmtDate(d.kimi.expires_at)}` : '';
-  $('exp-astra').textContent = d.astra?.expires_at ? `vence ${fmtDate(d.astra.expires_at)}` : '';
+  const tot = d.total || d.kimi || {};
+  const totB = tot.balance || 0;
+  $('val-total').textContent = Math.round(totB).toLocaleString();
+  $('bar-total').style.width = Math.min(100, (totB / maxCredits) * 100) + '%';
+  $('exp-total').textContent = tot.expires_at ? `el lote mas proximo vence ${fmtDate(tot.expires_at)}` : '';
   $('month-stat').textContent = `Este mes: ${d.month_calls || 0} consultas`;
 
   // Packs
@@ -405,7 +381,7 @@ function renderBalance() {
   } else {
     lotsList.innerHTML = lots.map(l =>
       `<div class="lot-row">
-        <span><strong style="color:var(--${l.bucket})">${l.bucket.toUpperCase()}</strong> ${Math.round(l.remaining)}/${Math.round(l.credits)}</span>
+        <span><strong>${l.source === 'stripe' ? 'Compra' : 'Abono'}</strong> ${Math.round(l.remaining)}/${Math.round(l.credits)}</span>
         <span style="color:var(--muted)">vence ${fmtDate(l.expires_at)}</span>
       </div>`
     ).join('');
@@ -422,7 +398,7 @@ function renderBalance() {
       const cls = delta > 0 ? 'pos' : 'neg';
       const sign = delta > 0 ? '+' : '';
       return `<div class="history-item">
-        <span>${h.kind} · ${h.bucket}</span>
+        <span>${({topup:'Compra',adjust:'Abono',gift:'Regalo',refund:'Reembolso'})[h.kind] || h.kind}</span>
         <span class="history-delta ${cls}">${sign}${Math.round(delta)}</span>
       </div>`;
     }).join('');
@@ -440,21 +416,12 @@ function renderPacks() {
     </div>`
   ).join('');
   grid.querySelectorAll('.pack-card').forEach(el => {
-    el.onclick = () => buyPack(selectedBucket, Number(el.dataset.usd));
+    el.onclick = () => buyPack(Number(el.dataset.usd));
   });
 }
 
-// Bucket tabs
-document.querySelectorAll('.bucket-tab').forEach(tab => {
-  tab.onclick = () => {
-    document.querySelectorAll('.bucket-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    selectedBucket = tab.dataset.bucket;
-  };
-});
-
 // Buy
-async function buyPack(bucket, usd) {
+async function buyPack(usd) {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) { toast('Inicia sesion primero', false); return; }
   toast('Redirigiendo a Stripe...');
@@ -466,7 +433,7 @@ async function buyPack(bucket, usd) {
         apikey: SUPA_ANON,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ bucket, usd }),
+      body: JSON.stringify({ usd }),
     });
     const data = await r.json();
     if (data.url) {
