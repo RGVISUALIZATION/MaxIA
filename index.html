@@ -164,7 +164,7 @@ h1 span { color: var(--accent); }
     <div class="card" id="download">
       <h2>Descargar MaxIA</h2>
       <a class="btn dl-btn" href="/MaxIA.mzp" download>Descargar MaxIA (.mzp)</a>
-      <p class="dl-meta">Version 4.5.0 &middot; para 3ds Max 2023 a 2026 con V-Ray &middot; Windows</p>
+      <p class="dl-meta">Version 4.5.1 &middot; para 3ds Max 2023 a 2026 con V-Ray &middot; Windows</p>
       <ol class="steps">
         <li>Descarga el archivo y <span class="hl">arrastralo sobre el viewport</span> de 3ds Max. Si al arrastrar no pasa nada, ve a <span class="hl">Scripting &gt; Run Script</span> (Ejecutar script), elige <span class="hl">MaxIA.mzp</span> y pulsa Abrir.</li>
         <li>Pulsa <span class="hl">Instalar MaxIA</span> (si lo pide, reinicia 3ds Max).</li>
@@ -249,7 +249,7 @@ document.querySelectorAll('.dl-btn').forEach(function(a){
       fetch(SUPA_URL + '/rest/v1/rpc/maxia_log_download', {
         method: 'POST', keepalive: true,
         headers: { 'Content-Type': 'application/json', apikey: SUPA_ANON, Authorization: 'Bearer ' + SUPA_ANON },
-        body: JSON.stringify({ p_version: '4.5.0', p_referrer: document.referrer || null })
+        body: JSON.stringify({ p_version: '4.5.1', p_referrer: document.referrer || null })
       }).catch(function(){});
     } catch(e) {}
   });
