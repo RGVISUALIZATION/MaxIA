@@ -3,270 +3,406 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MaxIA - Asistente de IA para 3ds Max</title>
+<title>MaxIA — La IA dentro de 3ds Max</title>
+<meta name="description" content="MaxIA: la IA dentro de 3ds Max para visualización arquitectónica. Fachadas, louvers y pisos en vivo, mallas 3D desde una foto y renders mejorados con IA.">
+<link rel="preload" as="image" href="/img/hero.jpg" imagesrcset="/img/hero-1200.jpg 1200w, /img/hero.jpg 2400w" imagesizes="100vw">
 <style>
 :root {
-  --bg: #0a0a0f;
-  --surface: #14141f;
-  --border: #2a2a3a;
-  --text: #e8e8f0;
-  --muted: #8888a0;
-  --accent: #6c5ce7;
-  --accent-h: #7c6cf7;
-  --opus: #e07020;
-  --kimi: #20a0d0;
-  --astra: #10a37f;
-  --green: #00c853;
-  --red: #ff3b3b;
-  --radius: 10px;
+  --bg: #0b0b0a;
+  --surface: #131210;
+  --text: #ece8e0;
+  --text-2: #a8a298;
+  --muted: #6a6560;
+  --accent: #c9b99a;
+  --border: rgba(201,185,154,0.13);
+  --border-h: rgba(201,185,154,0.38);
+  --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-a { color: var(--accent); }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans); font-weight: 400; color: var(--text); min-height: 100vh;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(rgba(201,185,154,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,185,154,0.035) 1px, transparent 1px);
+  background-size: 120px 120px;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--text); }
+em { font-style: italic; font-weight: 300; color: var(--accent); }
+.label { font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--muted); }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.hidden { display: none !important; }
 
-/* Layout */
-.container { max-width: 560px; margin: 0 auto; padding: 24px 16px; display: flex; flex-direction: column; }
-h1, .subtitle, .toast { order: -1; }
-#auth-section, #dash-section { order: 1; }
-#info { order: 0; }
-body.in #info { order: 2; margin-top: 8px; }
-h1 { font-size: 1.6rem; font-weight: 700; text-align: center; margin-bottom: 8px; }
-h1 span { color: var(--accent); }
-.subtitle { text-align: center; color: var(--muted); font-size: 0.85rem; margin-bottom: 32px; }
+/* Nav */
+nav {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 26px 32px;
+}
+.logo { font-size: 12px; letter-spacing: 0.42em; color: var(--text); text-transform: uppercase; }
+.logo b { font-weight: 400; color: var(--accent); }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a { font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--text); opacity: .85; }
+.nav-links a:hover { opacity: 1; color: var(--accent); }
 
-/* Cards */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
-.card h2 { font-size: 1rem; margin-bottom: 12px; font-weight: 600; }
-
-/* Auth form */
-.auth-form { display: flex; flex-direction: column; gap: 12px; }
-.auth-form input { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; color: var(--text); font-size: 0.95rem; outline: none; }
-.auth-form input:focus { border-color: var(--accent); }
-.btn { background: var(--accent); color: #fff; border: none; border-radius: 6px; padding: 10px 16px; font-size: 0.95rem; cursor: pointer; font-weight: 600; transition: background .15s; }
-.btn:hover { background: var(--accent-h); }
+/* Hero */
+.hero {
+  position: relative; min-height: 92vh; display: flex; align-items: flex-end;
+  background: #1b1d1f center 40% / cover no-repeat;
+  background-image: url("/img/hero-1200.jpg");
+  background-image: image-set(url("/img/hero-1200.jpg") 1x, url("/img/hero.jpg") 2x);
+}
+@media (min-width: 1100px) { .hero { background-image: url("/img/hero.jpg"); } }
+.hero::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(11,11,10,0.55) 0%, rgba(11,11,10,0) 22%),
+    linear-gradient(0deg, var(--bg) 0%, rgba(11,11,10,0.86) 26%, rgba(11,11,10,0.25) 58%, rgba(11,11,10,0) 75%);
+}
+.hero-in { position: relative; width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 24px 56px; }
+.hero .label { color: var(--text-2); text-shadow: 0 1px 12px rgba(0,0,0,.6); }
+.hero h1 {
+  font-weight: 300; font-size: clamp(72px, 15vw, 168px); line-height: .9; letter-spacing: -0.04em; margin: 14px 0 18px;
+}
+.hero h1 em { font-weight: 300; }
+.hero .sub { font-size: clamp(17px, 2.2vw, 22px); font-weight: 300; color: var(--text); max-width: 560px; line-height: 1.4; }
+.cta { display: flex; gap: 12px; margin-top: 30px; flex-wrap: wrap; }
+.btn {
+  display: inline-block; font-family: var(--sans); font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase;
+  background: var(--accent); color: #12110f; border: 1px solid var(--accent); border-radius: 999px;
+  padding: 15px 28px; cursor: pointer; transition: background .2s, color .2s, border-color .2s;
+}
+.btn:hover { background: var(--text); border-color: var(--text); color: #12110f; }
 .btn:disabled { opacity: .5; cursor: default; }
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-.btn-outline:hover { border-color: var(--muted); }
-.auth-toggle { text-align: center; font-size: 0.85rem; color: var(--muted); }
-.auth-toggle span { color: var(--accent); cursor: pointer; }
-.auth-toggle span:hover { text-decoration: underline; }
+.btn-ghost { background: transparent; color: var(--text); border-color: var(--border-h); }
+.btn-ghost:hover { background: transparent; color: var(--accent); border-color: var(--accent); }
 
-/* Bars */
-.bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.bar-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; width: 44px; }
-.bar-label.opus { color: var(--opus); }
-.bar-label.kimi { color: var(--kimi); }
-.bar-label.astra { color: var(--astra); }
-.bar-label.total { color: var(--accent); width: auto; }
-.bar-track { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 4px; transition: width .4s ease; }
-.bar-fill.opus { background: var(--opus); }
-.bar-fill.kimi { background: var(--kimi); }
-.bar-fill.astra { background: var(--astra); }
-.bar-fill.total { background: linear-gradient(90deg, var(--kimi), var(--opus), var(--astra)); }
-.bar-value { font-size: 0.85rem; font-weight: 600; min-width: 50px; text-align: right; }
-.bar-exp { font-size: 0.75rem; color: var(--muted); text-align: right; margin-top: -10px; margin-bottom: 8px; }
+/* Barra de puertas (como en el plugin) */
+.doorbar {
+  margin-top: 44px; display: inline-flex; flex-wrap: wrap; gap: 4px 0; align-items: center;
+  padding: 12px 20px; border-radius: 14px; border: 1px solid rgba(236,232,224,0.14);
+  background: rgba(20,19,17,0.45); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+}
+.doorbar span { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: rgba(236,232,224,0.72); padding: 2px 10px; }
+.doorbar span.on { color: var(--accent); text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+.doorbar i { color: var(--muted); font-style: normal; font-size: 10px; }
 
-/* Packs */
-.packs-section { margin-top: 8px; }
-.packs-section h3 { font-size: 0.85rem; color: var(--muted); margin-bottom: 10px; }
-.bucket-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-.bucket-tab { flex: 1; padding: 8px; text-align: center; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all .15s; }
-.bucket-tab.active { border-color: var(--accent); color: var(--accent); }
-.pack-grid { display: flex; gap: 10px; }
-.pack-card { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 10px; text-align: center; cursor: pointer; transition: all .15s; }
-.pack-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-.pack-price { font-size: 1.3rem; font-weight: 700; }
-.pack-credits { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+/* Secciones */
+section { padding: 96px 0; border-top: 1px solid var(--border); }
+.statement { font-size: clamp(34px, 5.4vw, 64px); font-weight: 300; letter-spacing: -0.02em; line-height: 1.08; max-width: 900px; }
+.lead { color: var(--text-2); font-size: 17px; font-weight: 300; line-height: 1.6; max-width: 620px; margin-top: 28px; }
+.sec-head { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; margin-bottom: 44px; flex-wrap: wrap; }
+.sec-head h2 { font-size: clamp(26px, 3.4vw, 38px); font-weight: 300; letter-spacing: -0.01em; }
 
-/* History */
-.history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
-.history-item:last-child { border: none; }
-.history-delta { font-weight: 600; }
-.history-delta.pos { color: var(--green); }
-.history-delta.neg { color: var(--red); }
+/* Puertas */
+.doors { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); border-left: 1px solid var(--border); }
+.door { padding: 32px 28px 34px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); transition: background .25s; }
+.door:hover { background: rgba(201,185,154,0.035); }
+.door svg { width: 30px; height: 30px; stroke: var(--accent); fill: none; stroke-width: 1.15; stroke-linecap: round; stroke-linejoin: round; }
+.door h3 { font-size: 22px; font-weight: 400; margin: 22px 0 10px; letter-spacing: -0.01em; }
+.door p { color: var(--text-2); font-size: 15px; font-weight: 300; line-height: 1.55; }
+.door .det { color: var(--muted); font-size: 13px; margin-top: 12px; line-height: 1.55; }
+.door .tag { display: inline-block; margin-top: 14px; font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: var(--accent); }
+.door.soon h3, .door.soon p { opacity: .55; }
 
-/* Lots */
-.lot-row { display: flex; justify-content: space-between; font-size: 0.82rem; padding: 6px 0; border-bottom: 1px solid var(--border); }
-.lot-row:last-child { border: none; }
+/* Render a todo lo ancho */
+.band { position: relative; margin: 0; border-top: 1px solid var(--border); }
+.band img { display: block; width: 100%; height: clamp(320px, 62vw, 820px); object-fit: cover; }
+.band figcaption { position: absolute; right: 24px; bottom: 18px; color: rgba(236,232,224,.8); text-shadow: 0 1px 10px rgba(0,0,0,.5); }
+
+/* Lista y columnas */
+.feats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 56px; }
+.feats div { padding: 22px 0; border-top: 1px solid var(--border); }
+.feats b { display: block; font-weight: 400; font-size: 17px; margin-bottom: 6px; }
+.feats span { color: var(--text-2); font-weight: 300; font-size: 15px; line-height: 1.55; }
+.ias { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 40px; }
+.ias div { border-top: 1px solid var(--border-h); padding-top: 20px; }
+.ias b { display: block; font-weight: 400; font-size: 13px; letter-spacing: .32em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+.ias span { color: var(--text-2); font-size: 15px; font-weight: 300; line-height: 1.55; }
+.note { color: var(--muted); font-size: 14px; line-height: 1.65; margin-top: 36px; max-width: 760px; }
+
+/* Descarga */
+.dl { display: grid; grid-template-columns: 1fr 1.2fr; gap: 56px; align-items: start; }
+.dl-meta { color: var(--muted); font-size: 12px; letter-spacing: .14em; margin-top: 16px; }
+.steps { list-style: none; counter-reset: s; }
+.steps li { counter-increment: s; position: relative; padding: 18px 0 18px 54px; border-top: 1px solid var(--border);
+  color: var(--text-2); font-size: 15px; font-weight: 300; line-height: 1.6; }
+.steps li::before { content: counter(s, decimal-leading-zero); position: absolute; left: 0; top: 19px;
+  font-size: 12px; letter-spacing: .2em; color: var(--accent); }
+.hl { color: var(--text); font-weight: 400; }
+
+/* Cuenta */
+main { display: flex; flex-direction: column; }
+body.in #cuenta { order: -1; }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 36px; }
+.auth { max-width: 420px; }
+.auth h2 { font-size: 28px; font-weight: 300; margin: 12px 0 26px; }
+.field { width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--border-h); padding: 12px 0;
+  color: var(--text); font: 300 16px var(--sans); outline: none; margin-bottom: 18px; border-radius: 0; }
+.field:focus { border-bottom-color: var(--accent); }
+.field::placeholder { color: var(--muted); }
+.auth .btn { width: 100%; margin-top: 8px; }
+.switch { margin-top: 18px; font-size: 13px; color: var(--muted); }
+.switch span { color: var(--accent); cursor: pointer; letter-spacing: .04em; }
+
+.dash-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 40px; }
+.dash-top .who { color: var(--text-2); font-size: 14px; margin-top: 10px; }
+.linkbtn { background: none; border: 0; color: var(--muted); font: 11px var(--sans); letter-spacing: .3em; text-transform: uppercase; cursor: pointer; }
+.linkbtn:hover { color: var(--accent); }
+.dash { display: grid; grid-template-columns: 1.15fr 1fr; gap: 24px; }
+.saldo .num { font-size: clamp(64px, 9vw, 104px); font-weight: 300; letter-spacing: -0.04em; line-height: 1; margin: 18px 0 6px; }
+.saldo .unit { color: var(--muted); font-size: 12px; letter-spacing: .3em; text-transform: uppercase; }
+.meter { height: 2px; background: var(--border); margin: 26px 0 12px; }
+.meter div { height: 100%; background: var(--accent); width: 0; transition: width .6s ease; }
+.small { color: var(--muted); font-size: 13px; line-height: 1.6; }
+.packs { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-top: 18px; }
+.pack { border: 1px solid var(--border); border-radius: 4px; padding: 20px 14px; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; }
+.pack:hover { border-color: var(--accent); background: rgba(201,185,154,0.04); }
+.pack .p { font-size: 28px; font-weight: 300; }
+.pack .c { color: var(--muted); font-size: 12px; margin-top: 6px; letter-spacing: .04em; }
+.uso-row { display: grid; grid-template-columns: 96px 1fr 70px; gap: 14px; align-items: center; padding: 11px 0; border-top: 1px solid var(--border); font-size: 14px; }
+.uso-row .bar { height: 2px; background: var(--border); }
+.uso-row .bar div { height: 100%; background: var(--accent); }
+.uso-row .v { text-align: right; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.uso-row .d { color: var(--muted); font-size: 12px; }
+.list-row { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); font-size: 14px; }
+.list-row .m { color: var(--muted); font-size: 13px; }
+.list-row .pos { color: var(--accent); font-variant-numeric: tabular-nums; }
+.list-row .neg { color: var(--text-2); font-variant-numeric: tabular-nums; }
+.panel h3 { font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--muted); font-weight: 400; margin-bottom: 8px; }
+.stack { display: flex; flex-direction: column; gap: 24px; }
+
+/* Pie */
+footer { border-top: 1px solid var(--border); padding: 40px 0 56px; }
+footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
 /* Toast */
-.toast { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--border); padding: 12px 20px; border-radius: 8px; font-size: 0.9rem; z-index: 100; opacity: 0; transition: opacity .3s; pointer-events: none; }
+.toast { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--border-h);
+  padding: 13px 22px; border-radius: 4px; font-size: 14px; z-index: 100; opacity: 0; transition: opacity .3s; pointer-events: none; }
 .toast.show { opacity: 1; }
-.toast.ok { border-color: var(--green); }
-.toast.err { border-color: var(--red); }
+.toast.err { border-color: #b4675a; }
 
-/* Misc */
-.hidden { display: none !important; }
-.email-display { font-size: 0.85rem; color: var(--muted); text-align: center; margin-bottom: 16px; }
-.logout-row { text-align: center; margin-top: 12px; }
-.month-stat { font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
-.loading { text-align: center; color: var(--muted); padding: 20px; }
-
-/* Info / descarga */
-.hero { text-align: center; margin: 4px 0 20px; }
-.hero p { color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
-.feat { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-.feat li { font-size: 0.9rem; line-height: 1.45; padding-left: 22px; position: relative; }
-.feat li::before { content: ''; position: absolute; left: 4px; top: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-.feat b { color: var(--text); }
-.ia-row { display: flex; gap: 10px; }
-.ia { flex: 1; background: var(--bg); border: 1px solid var(--border); border-top-width: 3px; border-radius: 8px; padding: 12px 10px; }
-.ia b { display: block; font-size: 0.9rem; margin-bottom: 4px; }
-.ia span { font-size: 0.78rem; color: var(--muted); line-height: 1.4; display: block; }
-.ia.kimi { border-top-color: var(--kimi); } .ia.kimi b { color: var(--kimi); }
-.ia.opus { border-top-color: var(--opus); } .ia.opus b { color: var(--opus); }
-.ia.astra { border-top-color: var(--astra); } .ia.astra b { color: var(--astra); }
-.note { font-size: 0.8rem; color: var(--muted); margin-top: 12px; line-height: 1.45; }
-.dl-btn { display: block; text-align: center; text-decoration: none; padding: 14px 16px; font-size: 1rem; }
-.dl-meta { text-align: center; font-size: 0.78rem; color: var(--muted); margin: 8px 0 16px; }
-.steps { padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 0.88rem; line-height: 1.45; }
-.steps li::marker { color: var(--accent); font-weight: 700; }
-.hl { color: var(--text); font-weight: 600; }
-.cta-row { display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
-.cta-row .btn { text-decoration: none; }
-.hero-big { color: var(--text) !important; font-size: 1.15rem !important; font-weight: 700; line-height: 1.35 !important; margin-bottom: 10px; }
-.doors { display: flex; flex-direction: column; gap: 10px; }
-.door { background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 12px 14px; }
-.door b { display: block; font-size: 0.95rem; margin-bottom: 4px; }
-.door span { font-size: 0.82rem; color: var(--muted); line-height: 1.45; display: block; }
-.door ul { margin: 8px 0 6px 16px; font-size: 0.82rem; line-height: 1.45; }
-.door ul b { display: inline; font-size: inherit; color: var(--text); }
-.door li { margin-bottom: 4px; color: var(--muted); }
-.door em { font-size: 0.76rem; color: var(--muted); }
-.door.soon { opacity: 0.6; border-left-color: var(--border); }
-@media (max-width: 420px) { .ia-row { flex-direction: column; } }
+@media (max-width: 900px) {
+  .doors { grid-template-columns: repeat(2, 1fr); }
+  .dl, .dash { grid-template-columns: 1fr; gap: 32px; }
+  .ias { grid-template-columns: 1fr; gap: 24px; }
+}
+@media (max-width: 640px) {
+  nav { padding: 20px 16px; }
+  .nav-links { gap: 16px; }
+  .nav-links a.opt { display: none; }
+  .wrap, .hero-in { padding-left: 16px; padding-right: 16px; }
+  .doors, .feats { grid-template-columns: 1fr; }
+  section { padding: 64px 0; }
+  .panel { padding: 24px 20px; }
+  .doorbar { padding: 10px 8px; }
+  .doorbar span { padding: 2px 6px; font-size: 10px; }
+  .uso-row { grid-template-columns: 80px 1fr 56px; }
+}
 </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Max<span>IA</span></h1>
-  <p class="subtitle">Asistente de inteligencia artificial para 3ds Max</p>
+<div id="toast" class="toast"></div>
 
-  <!-- Toast -->
-  <div id="toast" class="toast"></div>
+<nav>
+  <span class="logo">Max<b>IA</b></span>
+  <div class="nav-links">
+    <a class="opt" href="#puertas">Puertas</a>
+    <a class="opt" href="#descargar">Descargar</a>
+    <a href="#cuenta" id="nav-cuenta">Entrar</a>
+  </div>
+</nav>
 
-  <!-- Info + descarga -->
-  <div id="info">
-    <div class="hero">
-      <p class="hero-big">Fachadas, louvers y pisos en segundos. Modelos 3D desde una foto. Escenas listas para render.</p>
-      <p>Todo dentro de tu 3ds Max: escribes lo que necesitas o llenas un formulario, y MaxIA lo construye en tu escena. Menos horas de talacha, mas tiempo para disenar.</p>
-      <div class="cta-row"><a class="btn" href="#download">Descargar MaxIA</a><a class="btn btn-outline" href="#auth-section" onclick="document.getElementById('auth-switch').click()">Crear cuenta</a></div>
+<header class="hero">
+  <div class="hero-in">
+    <p class="label">Plugin para 3ds Max + V-Ray</p>
+    <h1>Max<em>IA</em></h1>
+    <p class="sub">La IA dentro de 3ds Max para visualización arquitectónica.</p>
+    <div class="cta">
+      <a class="btn" href="#descargar">Descárgalo gratis</a>
+      <a class="btn btn-ghost" href="#cuenta" id="cta-cuenta">Crear cuenta</a>
     </div>
+    <div class="doorbar" aria-label="Las seis puertas de MaxIA">
+      <span>PENSAR</span><i>·</i><span>CONSTRUIR</span><i>·</i><span>DISTRIBUIR</span><i>·</i>
+      <span>MATERIALIZAR</span><i>·</i><span>MODELAR</span><i>·</i><span class="on">POST-AI</span>
+    </div>
+  </div>
+</header>
 
-    <div class="card">
-      <h2>Seis puertas, un solo lugar</h2>
+<main>
+  <section id="intro">
+    <div class="wrap">
+      <p class="statement">Menos botones. <em>Más arquitectura.</em></p>
+      <p class="lead">Fachadas, louvers y pisos que se actualizan en vivo. Mallas 3D desde una foto. Renders mejorados con IA. Todo dentro de tu escena de 3ds Max: escribes lo que necesitas o mueves un parámetro, y MaxIA lo construye.</p>
+    </div>
+  </section>
+
+  <section id="puertas">
+    <div class="wrap">
+      <div class="sec-head"><h2>Seis puertas, un solo lugar</h2><span class="label">01 — Puertas</span></div>
       <div class="doors">
-        <div class="door"><b>Construir</b><span>Geometria procedural que se actualiza en vivo mientras mueves los parametros.</span>
-          <ul>
-            <li><b>Fachada de ventanas</b>: antepecho, vidrio y montantes; el modulo se ajusta exacto al muro.</li>
-            <li><b>Louvers</b>: verticales u horizontales en muros, pergolas y plafones.</li>
-            <li><b>Pisos y recubrimientos</b>: duela, loseta, piedra o lambrin en 11 patrones (espiga, chevron, versalles, hexagonal...), cortados al contorno real y con UV a escala.</li>
-          </ul>
-          <em>Muros rectos, quebrados o curvos, o un spline. Eliges la cara por Material ID.</em></div>
-        <div class="door"><b>Modelar</b><span>Sube una foto o describe un objeto y MaxIA te entrega la malla 3D con UVs y material, a escala real dentro de tu escena. Solo se cobra si sale.</span></div>
-        <div class="door"><b>Post-AI</b><span>Toma tu render del VFB (o hasta 4 imagenes de referencia), escribe que quieres y la IA te devuelve la imagen mejorada en 1K, 2K o 4K, guardada con tu proyecto. Solo se cobra si sale.</span></div>
-        <div class="door"><b>Materializar</b><span>Vidrio, espejo, cromo, concreto, yeso, agua y mas: materiales V-Ray listos en un clic. Gratis.</span></div>
-        <div class="door"><b>Pensar</b><span>Pidele lo que sea en espanol: iluminar, configurar render, ordenar capas, revisar una escena heredada.</span></div>
-        <div class="door soon"><b>Distribuir</b><span>Proximamente: arboles en banqueta, autos en estacionamiento, mobiliario sobre spline y gente.</span></div>
-      </div>
-      <p class="note">Las herramientas de Construir son gratis si llenas tu el formulario; si prefieres que la IA las configure desde un texto o una foto, pagas un precio fijo por tarea. Selecciona lo que generaste y vuelve a abrir la herramienta para seguir ajustandolo.</p>
-    </div>
-
-    <div class="card">
-      <h2>Que hace por ti</h2>
-      <ul class="feat">
-        <li><b>Lee tu escena</b> y trabaja sobre ella: no tienes que describir nada.</li>
-        <li><b>Iluminacion, materiales V-Ray, camaras y render</b>: ajustes en lote y configuraciones listas para entregar.</li>
-        <li><b>Limpia y ordena</b> escenas heredadas, y automatiza lo que repites en cada proyecto.</li>
-        <li><b>Escena ligera</b>: todo lo que genera usa instancias y materiales compartidos, en capas MAXIA ordenadas.</li>
-        <li><b>Sin miedo a equivocarte</b>: cada tarea queda en un solo paso de deshacer (Ctrl+Z) y MaxIA te pregunta antes de tocar algo fuera de tu escena.</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h2>Tres IAs, tu eliges</h2>
-      <div class="ia-row">
-        <div class="ia kimi"><b>Kimi</b><span>Rapida y economica. Para el dia a dia y tareas repetitivas.</span></div>
-        <div class="ia opus"><b>Opus</b><span>Escenas complejas y trabajo delicado, cuando quieres acertar a la primera.</span></div>
-        <div class="ia astra"><b>Astra</b><span>Los problemas mas dificiles. Solo se usa si la eliges.</span></div>
-      </div>
-      <p class="note">Sin suscripcion ni API keys: compras un solo saldo de creditos (desde $10 USD) que sirve para las tres IAs y vence a los 90 dias. Cada IA descuenta segun lo que cuesta: una tarea tipica con Kimi cuesta unos centavos de dolar; Opus y Astra, mas. Usa el modo Auto y MaxIA elige entre Kimi y Opus por ti.</p>
-    </div>
-
-    <div class="card" id="download">
-      <h2>Descargar MaxIA</h2>
-      <a class="btn dl-btn" href="/MaxIA.mzp" download>Descargar MaxIA (.mzp)</a>
-      <p class="dl-meta">Version 4.9.0 &middot; para 3ds Max 2023 a 2026 con V-Ray &middot; Windows</p>
-      <ol class="steps">
-        <li>Descarga el archivo y <span class="hl">arrastralo sobre el viewport</span> de 3ds Max. Si al arrastrar no pasa nada, ve a <span class="hl">Scripting &gt; Run Script</span> (Ejecutar script), elige <span class="hl">MaxIA.mzp</span> y pulsa Abrir.</li>
-        <li>Pulsa <span class="hl">Instalar MaxIA</span> (si lo pide, reinicia 3ds Max).</li>
-        <li>Agrega el boton: Customize &gt; Customize User Interface &gt; Toolbars &gt; categoria <span class="hl">MaxIA</span>.</li>
-        <li>Abre MaxIA, pulsa <span class="hl">Cuenta</span> y entra con el correo con el que te registraste aqui.</li>
-      </ol>
-      <p class="note">Primero crea tu cuenta aqui abajo y compra tus primeros creditos; despues entras con la misma cuenta desde 3ds Max. Dudas o problemas con la instalacion: <a href="mailto:soporte@rgviz.com">soporte@rgviz.com</a></p>
-    </div>
-  </div>
-
-  <!-- Auth section -->
-  <div id="auth-section">
-    <div class="card">
-      <h2 id="auth-title">Iniciar sesion</h2>
-      <form class="auth-form" id="auth-form">
-        <input type="email" id="auth-email" placeholder="Correo electronico" required autocomplete="email">
-        <input type="password" id="auth-pass" placeholder="Contrasena" required autocomplete="current-password" minlength="6">
-        <button type="submit" class="btn" id="auth-btn">Entrar</button>
-      </form>
-      <p class="auth-toggle" style="margin-top:12px">
-        <span id="auth-switch"></span>
-      </p>
-    </div>
-  </div>
-
-  <!-- Dashboard section -->
-  <div id="dash-section" class="hidden">
-    <p class="email-display" id="dash-email"></p>
-
-    <!-- Balance card -->
-    <div class="card" id="balance-card">
-      <h2>Tu saldo</h2>
-      <div id="balance-loading" class="loading">Cargando...</div>
-      <div id="balance-content" class="hidden">
-        <div class="bar-row">
-          <span class="bar-label total">Creditos</span>
-          <div class="bar-track"><div class="bar-fill total" id="bar-total"></div></div>
-          <span class="bar-value" id="val-total">0</span>
+        <div class="door">
+          <svg viewBox="0 0 32 32"><path d="M6 8h20a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H14l-6 5v-5H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z"/></svg>
+          <h3>Pensar</h3>
+          <p>Pídele lo que sea en español: iluminar, configurar render, ordenar capas, revisar una escena heredada.</p>
+          <p class="det">Con Astra modela piezas con forma real (muebles, lámparas, escaleras) y las importa a tu escena.</p>
         </div>
-        <p class="bar-exp" id="exp-total"></p>
-        <p class="bar-exp">Tus creditos sirven para Kimi, Opus y Astra: eliges la IA en cada tarea.</p>
-        <p class="month-stat" id="month-stat"></p>
-
-        <!-- Buy packs -->
-        <div class="packs-section">
-          <h3>Comprar creditos</h3>
-          <div class="pack-grid" id="pack-grid"></div>
+        <div class="door">
+          <svg viewBox="0 0 32 32"><path d="M5 27V5h22v22z"/><path d="M5 12h22M12 12v15M19 12v15"/></svg>
+          <h3>Construir</h3>
+          <p>Geometría procedural que se actualiza en vivo mientras mueves los parámetros.</p>
+          <p class="det">Fachada de ventanas, louvers y pisos (duela, loseta o piedra en 11 patrones) en muros rectos, curvos o sobre un spline.</p>
+        </div>
+        <div class="door soon">
+          <svg viewBox="0 0 32 32"><circle cx="9" cy="10" r="3"/><circle cx="22" cy="8" r="2"/><circle cx="18" cy="20" r="3.5"/><circle cx="8" cy="23" r="2"/><path d="M25 26v-6"/></svg>
+          <h3>Distribuir</h3>
+          <p>Árboles en banqueta, autos en estacionamiento, mobiliario sobre spline y gente.</p>
+          <span class="tag">Próximamente</span>
+        </div>
+        <div class="door">
+          <svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="11"/><path d="M8 21c4-1 9-6 10-14M13 27c2-5 7-9 13-10"/></svg>
+          <h3>Materializar</h3>
+          <p>Vidrio, espejo, cromo, concreto, yeso, agua y más: materiales V-Ray listos en un clic. Gratis.</p>
+        </div>
+        <div class="door">
+          <svg viewBox="0 0 32 32"><path d="M16 4l11 6v12l-11 6-11-6V10z"/><path d="M5 10l11 6 11-6M16 16v12"/></svg>
+          <h3>Modelar</h3>
+          <p>De una foto o una descripción a una malla 3D con UVs y material, a escala real en tu escena.</p>
+          <p class="det">Solo se cobra si sale.</p>
+        </div>
+        <div class="door">
+          <svg viewBox="0 0 32 32"><path d="M16 4v6M16 22v6M4 16h6M22 16h6M8 8l3.5 3.5M20.5 20.5L24 24M24 8l-3.5 3.5M11.5 20.5L8 24"/><circle cx="16" cy="16" r="2"/></svg>
+          <h3>Post-AI</h3>
+          <p>Toma tu render del VFB, escribe qué quieres y la IA te devuelve la imagen mejorada en 1K, 2K o 4K.</p>
+          <p class="det">Hasta 4 imágenes de referencia. Se guarda con tu proyecto. Solo se cobra si sale.</p>
         </div>
       </div>
+      <p class="note">Las herramientas de Construir son gratis si llenas tú el formulario; si prefieres que la IA las configure desde un texto o una foto, pagas un precio fijo por tarea. Selecciona lo que generaste y vuelve a abrir la herramienta para seguir ajustándolo.</p>
     </div>
+  </section>
 
-    <!-- Active lots -->
-    <div class="card" id="lots-card" class="hidden">
-      <h2>Lotes activos</h2>
-      <div id="lots-list"></div>
+  <section id="que-hace">
+    <div class="wrap">
+      <div class="sec-head"><h2>Qué hace por ti</h2><span class="label">02 — Flujo</span></div>
+      <div class="feats">
+        <div><b>Lee tu escena</b><span>Trabaja sobre lo que ya tienes: no tienes que describir nada.</span></div>
+        <div><b>Iluminación, materiales, cámaras y render</b><span>Ajustes en lote y configuraciones listas para entregar.</span></div>
+        <div><b>Limpia y ordena</b><span>Escenas heredadas en orden, y lo que repites en cada proyecto, automatizado.</span></div>
+        <div><b>Escena ligera</b><span>Instancias y materiales compartidos, en capas MAXIA ordenadas.</span></div>
+        <div><b>Sin miedo a equivocarte</b><span>Cada tarea queda en un solo paso de deshacer (Ctrl+Z).</span></div>
+        <div><b>Tus archivos, con tu proyecto</b><span>Mallas, texturas e imágenes se guardan en la carpeta de tu proyecto.</span></div>
+      </div>
     </div>
+  </section>
 
-    <!-- History -->
-    <div class="card" id="history-card">
-      <h2>Movimientos recientes</h2>
-      <div id="history-list"></div>
-    </div>
+  <figure class="band">
+    <img src="/img/pabellon.jpg" srcset="/img/pabellon-1200.jpg 1200w, /img/pabellon.jpg 2400w" sizes="100vw"
+         alt="Render de un pabellón de travertino entre árboles" loading="lazy">
+    <figcaption class="label">Render · RGVIZ</figcaption>
+  </figure>
 
-    <div class="logout-row">
-      <button class="btn btn-outline" id="logout-btn">Cerrar sesion</button>
+  <section id="ias">
+    <div class="wrap">
+      <div class="sec-head"><h2>Tres IAs, tú eliges</h2><span class="label">03 — Modelos</span></div>
+      <div class="ias">
+        <div><b>Rápido</b><span>Ágil y económica. Para el día a día y las tareas repetitivas.</span></div>
+        <div><b>Máximo</b><span>Escenas complejas y trabajo delicado, cuando quieres acertar a la primera.</span></div>
+        <div><b>Astra</b><span>Los problemas más difíciles y el modelado de piezas con forma. Solo se usa si la eliges.</span></div>
+      </div>
+      <p class="note">Sin suscripción ni API keys: compras un solo saldo de créditos (desde $10 USD) que sirve para todo MaxIA y vence a los 90 días. Cada IA descuenta según lo que cuesta; una tarea típica en modo Rápido cuesta unos centavos de dólar. En modo Auto, MaxIA elige por ti.</p>
     </div>
+  </section>
+
+  <section id="descargar">
+    <div class="wrap dl">
+      <div>
+        <span class="label">04 — Descargar</span>
+        <h2 style="font-size:clamp(30px,4vw,44px);font-weight:300;margin:16px 0 28px;letter-spacing:-0.01em">Instálalo en un minuto.</h2>
+        <a class="btn dl-btn" href="/MaxIA.mzp" download>Descargar MaxIA</a>
+        <p class="dl-meta">VERSIÓN 4.9.0 · 3DS MAX 2023–2026 CON V-RAY · WINDOWS</p>
+      </div>
+      <div>
+        <ol class="steps">
+          <li>Descarga el archivo y <span class="hl">arrástralo sobre el viewport</span> de 3ds Max. Si no pasa nada, ve a <span class="hl">Scripting &gt; Run Script</span> y elige <span class="hl">MaxIA.mzp</span>.</li>
+          <li>Pulsa <span class="hl">Instalar MaxIA</span> (si lo pide, reinicia 3ds Max).</li>
+          <li>Agrega el botón: Customize &gt; Customize User Interface &gt; Toolbars &gt; categoría <span class="hl">MaxIA</span>.</li>
+          <li>Abre MaxIA, pulsa <span class="hl">Cuenta</span> y entra con el correo con el que te registraste aquí.</li>
+        </ol>
+        <p class="note" style="margin-top:20px">Crea tu cuenta y compra tus primeros créditos aquí; después entras con la misma cuenta desde 3ds Max. Dudas con la instalación: <a href="mailto:soporte@rgviz.com">soporte@rgviz.com</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="cuenta">
+    <div class="wrap">
+      <!-- Acceso -->
+      <div id="auth-section" class="panel auth">
+        <span class="label">Tu cuenta</span>
+        <h2 id="auth-title">Iniciar sesión</h2>
+        <form id="auth-form">
+          <input class="field" type="email" id="auth-email" placeholder="Correo electrónico" required autocomplete="email">
+          <input class="field" type="password" id="auth-pass" placeholder="Contraseña" required autocomplete="current-password" minlength="6">
+          <button type="submit" class="btn" id="auth-btn">Entrar</button>
+        </form>
+        <p class="switch"><span id="auth-switch"></span></p>
+      </div>
+
+      <!-- Dashboard -->
+      <div id="dash-section" class="hidden">
+        <div class="dash-top">
+          <div><span class="label">Tu cuenta</span><p class="who" id="dash-email"></p></div>
+          <button class="linkbtn" id="logout-btn">Cerrar sesión</button>
+        </div>
+        <div class="dash">
+          <div class="stack">
+            <div class="panel saldo">
+              <h3>Saldo</h3>
+              <div id="balance-loading" class="small" style="padding:20px 0">Cargando…</div>
+              <div id="balance-content" class="hidden">
+                <div class="num" id="val-total">0</div>
+                <span class="unit">créditos · sirven para todo MaxIA</span>
+                <div class="meter"><div id="bar-total"></div></div>
+                <p class="small" id="exp-total"></p>
+                <p class="small" id="month-stat"></p>
+              </div>
+            </div>
+            <div class="panel">
+              <h3>Comprar créditos</h3>
+              <div class="packs" id="pack-grid"></div>
+              <p class="small" style="margin-top:14px">Pago seguro con Stripe. Los créditos vencen a los 90 días.</p>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="panel">
+              <h3>Consumo del mes</h3>
+              <div id="uso-list"></div>
+            </div>
+            <div class="panel" id="lots-card">
+              <h3>Lotes activos</h3>
+              <div id="lots-list"></div>
+            </div>
+            <div class="panel">
+              <h3>Compras y abonos</h3>
+              <div id="history-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="label">MaxIA · un producto de <a href="https://www.rgviz.com" target="_blank" rel="noopener">RGVIZ</a></span>
+    <span class="label"><a href="mailto:soporte@rgviz.com">soporte@rgviz.com</a></span>
   </div>
-</div>
+</footer>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/+esm';
@@ -274,6 +410,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 const SUPA_URL = 'https://vlrofsoztpzfcfatsekf.supabase.co';
 const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZscm9mc296dHB6ZmNmYXRzZWtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMzM3MzgsImV4cCI6MjEwNjgwOTczOH0.W4lh15_Z3eNEiKlAdmVPR5X6QnS3B_AFjTOnaY6u-2c';
 const FN = `${SUPA_URL}/functions/v1`;
+const VERSION = '4.9.0';
 
 const supabase = createClient(SUPA_URL, SUPA_ANON);
 
@@ -283,14 +420,12 @@ document.querySelectorAll('.dl-btn').forEach(function(a){
       fetch(SUPA_URL + '/rest/v1/rpc/maxia_log_download', {
         method: 'POST', keepalive: true,
         headers: { 'Content-Type': 'application/json', apikey: SUPA_ANON, Authorization: 'Bearer ' + SUPA_ANON },
-        body: JSON.stringify({ p_version: '4.9.0', p_referrer: document.referrer || null })
+        body: JSON.stringify({ p_version: VERSION, p_referrer: document.referrer || null })
       }).catch(function(){});
     } catch(e) {}
   });
 });
 
-
-// DOM refs
 const $ = (id) => document.getElementById(id);
 const authSection = $('auth-section');
 const dashSection = $('dash-section');
@@ -299,29 +434,27 @@ const authTitle = $('auth-title');
 const authSwitch = $('auth-switch');
 const authBtn = $('auth-btn');
 const toastEl = $('toast');
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 let isLogin = true;
-
 let balanceData = null;
 
-// Toast
 function toast(msg, ok = true) {
   toastEl.textContent = msg;
   toastEl.className = `toast show ${ok ? 'ok' : 'err'}`;
   setTimeout(() => toastEl.classList.remove('show'), 3500);
 }
 
-// Auth mode toggle
 function updateAuthUI() {
-  authTitle.textContent = isLogin ? 'Iniciar sesion' : 'Crear cuenta';
+  authTitle.textContent = isLogin ? 'Iniciar sesión' : 'Crear cuenta';
   authBtn.textContent = isLogin ? 'Entrar' : 'Registrarme';
-  authSwitch.textContent = isLogin ? 'Crear cuenta' : 'Ya tengo cuenta';
+  authSwitch.textContent = isLogin ? '¿No tienes cuenta? Créala aquí' : 'Ya tengo cuenta';
   $('auth-pass').autocomplete = isLogin ? 'current-password' : 'new-password';
 }
 authSwitch.onclick = () => { isLogin = !isLogin; updateAuthUI(); };
+$('cta-cuenta').addEventListener('click', () => { if (isLogin) { isLogin = false; updateAuthUI(); } });
 updateAuthUI();
 
-// Auth submit
 authForm.onsubmit = async (e) => {
   e.preventDefault();
   authBtn.disabled = true;
@@ -334,49 +467,46 @@ authForm.onsubmit = async (e) => {
     if (error) throw error;
     if (!isLogin) toast('Revisa tu correo para confirmar la cuenta.');
   } catch (err) {
-    toast(err.message || 'Error de autenticacion', false);
+    toast(err.message || 'Error de autenticación', false);
   }
   authBtn.disabled = false;
 };
 
-// Logout
-$('logout-btn').onclick = async () => {
-  await supabase.auth.signOut();
-};
+$('logout-btn').onclick = async () => { await supabase.auth.signOut(); };
 
-// Auth state
 supabase.auth.onAuthStateChange((event, session) => {
   if (session?.user) {
     authSection.classList.add('hidden');
     dashSection.classList.remove('hidden');
     document.body.classList.add('in');
     $('dash-email').textContent = session.user.email;
+    $('nav-cuenta').textContent = 'Mi cuenta';
+    $('cta-cuenta').textContent = 'Mi cuenta';
     loadBalance(session.access_token);
+    if (event === 'SIGNED_IN' || location.hash === '#cuenta') setTimeout(() => $('cuenta').scrollIntoView({ behavior: 'smooth' }), 50);
   } else {
     authSection.classList.remove('hidden');
     dashSection.classList.add('hidden');
     document.body.classList.remove('in');
+    $('nav-cuenta').textContent = 'Entrar';
+    $('cta-cuenta').textContent = 'Crear cuenta';
   }
 });
 
-// Check URL for payment result
 const params = new URLSearchParams(location.search);
 if (params.get('pago') === 'ok') {
-  toast('Pago exitoso. Tus creditos se acreditaron.');
-  history.replaceState(null, '', '/');
+  toast('Pago exitoso. Tus créditos se acreditaron.');
+  history.replaceState(null, '', '/#cuenta');
 } else if (params.get('pago') === 'cancelado') {
   toast('Pago cancelado.', false);
-  history.replaceState(null, '', '/');
+  history.replaceState(null, '', '/#cuenta');
 }
 
-// Load balance
 async function loadBalance(token) {
   $('balance-loading').classList.remove('hidden');
   $('balance-content').classList.add('hidden');
   try {
-    const r = await fetch(`${FN}/balance`, {
-      headers: { Authorization: `Bearer ${token}`, apikey: SUPA_ANON }
-    });
+    const r = await fetch(`${FN}/balance`, { headers: { Authorization: `Bearer ${token}`, apikey: SUPA_ANON } });
     if (!r.ok) throw new Error('Error cargando saldo');
     balanceData = await r.json();
     renderBalance();
@@ -385,98 +515,72 @@ async function loadBalance(token) {
   }
 }
 
+const fmtDate = (iso) => iso ? new Date(iso).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' }) : '';
+const fmtN = (n) => Math.round(Number(n) || 0).toLocaleString('es-MX');
+
 function renderBalance() {
   if (!balanceData) return;
   $('balance-loading').classList.add('hidden');
   $('balance-content').classList.remove('hidden');
   const d = balanceData;
-  const maxCredits = 5000;
-
-  const fmtDate = (iso) => {
-    if (!iso) return '';
-    const dt = new Date(iso);
-    return dt.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
-  };
   const tot = d.total || d.kimi || {};
-  const totB = tot.balance || 0;
-  $('val-total').textContent = Math.round(totB).toLocaleString();
-  $('bar-total').style.width = Math.min(100, (totB / maxCredits) * 100) + '%';
-  $('exp-total').textContent = tot.expires_at ? `el lote mas proximo vence ${fmtDate(tot.expires_at)}` : '';
-  $('month-stat').textContent = `Este mes: ${d.month_calls || 0} consultas`;
+  const totB = Number(tot.balance) || 0;
+  const lots = d.lots || [];
+  const bought = lots.reduce((s, l) => s + Number(l.credits || 0), 0);
+  $('val-total').textContent = fmtN(totB);
+  $('bar-total').style.width = (bought > 0 ? Math.min(100, totB / bought * 100) : (totB > 0 ? 100 : 0)) + '%';
+  $('exp-total').textContent = tot.expires_at ? `El lote más próximo vence el ${fmtDate(tot.expires_at)}.` : '';
+  $('month-stat').textContent = `Este mes: ${fmtN(tot.month_credits)} créditos usados.`;
 
-  // Packs
   renderPacks();
 
-  // Lots
-  const lotsList = $('lots-list');
-  const lots = d.lots || [];
-  if (lots.length === 0) {
-    lotsList.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Sin lotes activos</p>';
-  } else {
-    lotsList.innerHTML = lots.map(l =>
-      `<div class="lot-row">
-        <span><strong>${l.source === 'stripe' ? 'Compra' : 'Abono'}</strong> ${Math.round(l.remaining)}/${Math.round(l.credits)}</span>
-        <span style="color:var(--muted)">vence ${fmtDate(l.expires_at)}</span>
-      </div>`
-    ).join('');
-  }
+  // Consumo del mes por puerta
+  const uso = d.by_door || [];
+  const maxU = Math.max(1, ...uso.map(u => Number(u.credits) || 0));
+  $('uso-list').innerHTML = uso.length ? uso.map(u =>
+    `<div class="uso-row"><span>${esc(u.door)}${u.count && u.unit ? `<br><span class="d">${esc(u.count)} ${esc(u.unit || '')}</span>` : ''}</span>
+      <div class="bar"><div style="width:${Math.max(2, (Number(u.credits) || 0) / maxU * 100)}%"></div></div>
+      <span class="v">${fmtN(u.credits)}</span></div>`).join('')
+    : '<p class="small" style="padding-top:8px">Todavía no hay consumo este mes.</p>';
 
-  // History
-  const histList = $('history-list');
+  $('lots-list').innerHTML = lots.length ? lots.map(l =>
+    `<div class="list-row"><span>${l.source === 'stripe' ? 'Compra' : 'Abono'} · ${fmtN(l.remaining)} de ${fmtN(l.credits)}</span>
+      <span class="m">vence ${esc(fmtDate(l.expires_at))}</span></div>`).join('')
+    : '<p class="small" style="padding-top:8px">Sin lotes activos.</p>';
+
   const hist = d.history || [];
-  if (hist.length === 0) {
-    histList.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Sin movimientos</p>';
-  } else {
-    histList.innerHTML = hist.map(h => {
-      const delta = Number(h.delta);
-      const cls = delta > 0 ? 'pos' : 'neg';
-      const sign = delta > 0 ? '+' : '';
-      return `<div class="history-item">
-        <span>${({topup:'Compra',adjust:'Abono',gift:'Regalo',refund:'Reembolso'})[h.kind] || h.kind}</span>
-        <span class="history-delta ${cls}">${sign}${Math.round(delta)}</span>
-      </div>`;
-    }).join('');
-  }
+  $('history-list').innerHTML = hist.length ? hist.map(h => {
+    const delta = Number(h.delta);
+    const kind = ({topup:'Compra', adjust:'Abono', gift:'Regalo', refund:'Reembolso', expire:'Vencido'})[h.kind] || h.kind;
+    return `<div class="list-row"><span>${esc(kind)} <span class="m">· ${esc(fmtDate(h.created_at))}</span></span>
+      <span class="${delta > 0 ? 'pos' : 'neg'}">${delta > 0 ? '+' : ''}${fmtN(delta)}</span></div>`;
+  }).join('') : '<p class="small" style="padding-top:8px">Sin movimientos.</p>';
 }
 
-// Packs
 function renderPacks() {
   const packs = balanceData?.packs || [];
   const grid = $('pack-grid');
   grid.innerHTML = packs.map(p =>
-    `<div class="pack-card" data-usd="${p.usd}">
-      <div class="pack-price">$${p.usd}</div>
-      <div class="pack-credits">${Number(p.credits).toLocaleString()} creditos</div>
-    </div>`
-  ).join('');
-  grid.querySelectorAll('.pack-card').forEach(el => {
-    el.onclick = () => buyPack(Number(el.dataset.usd));
-  });
+    `<div class="pack" data-usd="${Number(p.usd)}"><div class="p">$${Number(p.usd)}</div>
+      <div class="c">${fmtN(p.credits)} créditos</div></div>`).join('');
+  grid.querySelectorAll('.pack').forEach(el => { el.onclick = () => buyPack(Number(el.dataset.usd)); });
 }
 
-// Buy
 async function buyPack(usd) {
   const { data: { session } } = await supabase.auth.getSession();
-  if (!session) { toast('Inicia sesion primero', false); return; }
-  toast('Redirigiendo a Stripe...');
+  if (!session) { toast('Inicia sesión primero', false); return; }
+  toast('Redirigiendo a Stripe…');
   try {
     const r = await fetch(`${FN}/checkout`, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-        apikey: SUPA_ANON,
-        'Content-Type': 'application/json',
-      },
+      headers: { Authorization: `Bearer ${session.access_token}`, apikey: SUPA_ANON, 'Content-Type': 'application/json' },
       body: JSON.stringify({ usd }),
     });
     const data = await r.json();
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      toast(data.error || 'Error al iniciar el pago', false);
-    }
+    if (data.url) window.location.href = data.url;
+    else toast(data.error || 'Error al iniciar el pago', false);
   } catch (err) {
-    toast('Error de conexion', false);
+    toast('Error de conexión', false);
   }
 }
 </script>
