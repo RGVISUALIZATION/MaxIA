@@ -123,6 +123,18 @@ h1 span { color: var(--accent); }
 .steps { padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 0.88rem; line-height: 1.45; }
 .steps li::marker { color: var(--accent); font-weight: 700; }
 .hl { color: var(--text); font-weight: 600; }
+.cta-row { display: flex; gap: 10px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+.cta-row .btn { text-decoration: none; }
+.hero-big { color: var(--text) !important; font-size: 1.15rem !important; font-weight: 700; line-height: 1.35 !important; margin-bottom: 10px; }
+.doors { display: flex; flex-direction: column; gap: 10px; }
+.door { background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 12px 14px; }
+.door b { display: block; font-size: 0.95rem; margin-bottom: 4px; }
+.door span { font-size: 0.82rem; color: var(--muted); line-height: 1.45; display: block; }
+.door ul { margin: 8px 0 6px 16px; font-size: 0.82rem; line-height: 1.45; }
+.door ul b { display: inline; font-size: inherit; color: var(--text); }
+.door li { margin-bottom: 4px; color: var(--muted); }
+.door em { font-size: 0.76rem; color: var(--muted); }
+.door.soon { opacity: 0.6; border-left-color: var(--border); }
 @media (max-width: 420px) { .ia-row { flex-direction: column; } }
 </style>
 </head>
@@ -138,7 +150,27 @@ h1 span { color: var(--accent); }
   <!-- Info + descarga -->
   <div id="info">
     <div class="hero">
-      <p>Dile a MaxIA lo que necesitas y lo hace dentro de tu escena de 3ds Max. Menos horas en tareas repetitivas, mas tiempo para disenar.</p>
+      <p class="hero-big">Fachadas, louvers y pisos en segundos. Modelos 3D desde una foto. Escenas listas para render.</p>
+      <p>Todo dentro de tu 3ds Max: escribes lo que necesitas o llenas un formulario, y MaxIA lo construye en tu escena. Menos horas de talacha, mas tiempo para disenar.</p>
+      <div class="cta-row"><a class="btn" href="#download">Descargar MaxIA</a><a class="btn btn-outline" href="#auth-section" onclick="document.getElementById('auth-switch').click()">Crear cuenta</a></div>
+    </div>
+
+    <div class="card">
+      <h2>Cinco puertas, un solo lugar</h2>
+      <div class="doors">
+        <div class="door"><b>Construir</b><span>Geometria procedural que se actualiza en vivo mientras mueves los parametros.</span>
+          <ul>
+            <li><b>Fachada de ventanas</b>: antepecho, vidrio y montantes; el modulo se ajusta exacto al muro.</li>
+            <li><b>Louvers</b>: verticales u horizontales en muros, pergolas y plafones.</li>
+            <li><b>Pisos y recubrimientos</b>: duela, loseta, piedra o lambrin en 11 patrones (espiga, chevron, versalles, hexagonal...), cortados al contorno real y con UV a escala.</li>
+          </ul>
+          <em>Muros rectos, quebrados o curvos, o un spline. Eliges la cara por Material ID.</em></div>
+        <div class="door"><b>Modelar</b><span>Sube una foto o describe un objeto y MaxIA te entrega la malla 3D con UVs y material, a escala real dentro de tu escena. Solo se cobra si sale.</span></div>
+        <div class="door"><b>Materializar</b><span>Vidrio, espejo, cromo, concreto, yeso, agua y mas: materiales V-Ray listos en un clic. Gratis.</span></div>
+        <div class="door"><b>Pensar</b><span>Pidele lo que sea en espanol: iluminar, configurar render, ordenar capas, revisar una escena heredada.</span></div>
+        <div class="door soon"><b>Distribuir</b><span>Proximamente: arboles en banqueta, autos en estacionamiento, mobiliario sobre spline y gente.</span></div>
+      </div>
+      <p class="note">Las herramientas de Construir son gratis si llenas tu el formulario; si prefieres que la IA las configure desde un texto o una foto, pagas un precio fijo por tarea. Selecciona lo que generaste y vuelve a abrir la herramienta para seguir ajustandolo.</p>
     </div>
 
     <div class="card">
@@ -147,6 +179,7 @@ h1 span { color: var(--accent); }
         <li><b>Lee tu escena</b> y trabaja sobre ella: no tienes que describir nada.</li>
         <li><b>Iluminacion, materiales V-Ray, camaras y render</b>: ajustes en lote y configuraciones listas para entregar.</li>
         <li><b>Limpia y ordena</b> escenas heredadas, y automatiza lo que repites en cada proyecto.</li>
+        <li><b>Escena ligera</b>: todo lo que genera usa instancias y materiales compartidos, en capas MAXIA ordenadas.</li>
         <li><b>Sin miedo a equivocarte</b>: cada tarea queda en un solo paso de deshacer (Ctrl+Z) y MaxIA te pregunta antes de tocar algo fuera de tu escena.</li>
       </ul>
     </div>
@@ -164,7 +197,7 @@ h1 span { color: var(--accent); }
     <div class="card" id="download">
       <h2>Descargar MaxIA</h2>
       <a class="btn dl-btn" href="/MaxIA.mzp" download>Descargar MaxIA (.mzp)</a>
-      <p class="dl-meta">Version 4.5.2 &middot; para 3ds Max 2023 a 2026 con V-Ray &middot; Windows</p>
+      <p class="dl-meta">Version 4.8.3 &middot; para 3ds Max 2023 a 2026 con V-Ray &middot; Windows</p>
       <ol class="steps">
         <li>Descarga el archivo y <span class="hl">arrastralo sobre el viewport</span> de 3ds Max. Si al arrastrar no pasa nada, ve a <span class="hl">Scripting &gt; Run Script</span> (Ejecutar script), elige <span class="hl">MaxIA.mzp</span> y pulsa Abrir.</li>
         <li>Pulsa <span class="hl">Instalar MaxIA</span> (si lo pide, reinicia 3ds Max).</li>
@@ -249,7 +282,7 @@ document.querySelectorAll('.dl-btn').forEach(function(a){
       fetch(SUPA_URL + '/rest/v1/rpc/maxia_log_download', {
         method: 'POST', keepalive: true,
         headers: { 'Content-Type': 'application/json', apikey: SUPA_ANON, Authorization: 'Bearer ' + SUPA_ANON },
-        body: JSON.stringify({ p_version: '4.5.2', p_referrer: document.referrer || null })
+        body: JSON.stringify({ p_version: '4.8.3', p_referrer: document.referrer || null })
       }).catch(function(){});
     } catch(e) {}
   });
